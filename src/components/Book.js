@@ -1,7 +1,9 @@
 import React from "react";
 
 function Book(props) {
-	const {backgroundImage, bookTitle, bookAuthor} = props.book;
+	const {backgroundImage, bookTitle, bookAuthor, shelf} = props.book;
+	const {handleShelfChange} = props;
+
 	return (
 		<li>
 			<div className="book">
@@ -15,14 +17,12 @@ function Book(props) {
 						}}
 					/>
 					<div className="book-shelf-changer">
-						<select>
-							<option value="move" disabled>
-								Move to...
-							</option>
-							<option value="currentlyReading">Currently Reading</option>
-							<option value="wantToRead">Want to Read</option>
-							<option value="read">Read</option>
-							<option value="none">None</option>
+						<select readOnly value={shelf} onChange={e => handleShelfChange(e, props.book)}>
+								<option value="move" disabled>Move to...</option>
+								<option value="currentlyReading">Currently Reading</option>
+								<option value="wantToRead">Want to Read</option>
+								<option value="read">Read</option>
+								<option value="none">None</option>
 						</select>
 					</div>
 				</div>

@@ -58,6 +58,20 @@ class BooksApp extends React.Component {
     }
   };
 
+  handleShelfChange = (event, book) => {
+    event.preventDefault();
+    const destination = event.target.value;
+    const prevShelf = book.shelf;
+    this.setState(prevState => {
+      prevState.books.shelf[prevShelf] = prevState.books.shelf[prevShelf].filter(currentBook => currentBook.bookTitle !== book.bookTitle);
+      if (destination !== 'none') {
+        book.shelf = destination;
+        prevState.books.shelf[destination].push(book);
+      }
+      return {prevState};
+    });
+  }
+
   render() {
     return (
       <div className="app">
@@ -70,9 +84,9 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                <CurrentlyReadingBooks books={this.state.books.shelf.currentlyReading}/>
-                <WantToReadBooks books={this.state.books.shelf.wantToRead}/>
-                <ReadBooks books={this.state.books.shelf.read}/>
+                <CurrentlyReadingBooks books={this.state.books.shelf.currentlyReading} handleShelfChange={this.handleShelfChange}/>
+                <WantToReadBooks books={this.state.books.shelf.wantToRead} handleShelfChange={this.handleShelfChange}/>
+                <ReadBooks books={this.state.books.shelf.read} handleShelfChange={this.handleShelfChange}/>
               </div>
             </div>
             <div className="open-search">
