@@ -10,6 +10,7 @@ import "./App.css";
 
 class BooksApp extends React.Component {
   state = {
+    searchedBooks: [],
     books: {
       shelf: {
         read: [{
@@ -72,10 +73,40 @@ class BooksApp extends React.Component {
     });
   }
 
+  structureObjectModel(books) {
+    return books.map((book => (
+      { backgroundImage: `url(${book.imageLinks.thumbnail})`,
+        bookTitle: book.title,
+        bookAuthor: book.authors
+      }
+    )))
+  }
+
+  setSearchResults(books) {
+    this.setState({searchedBooks: this.structureObjectModel(books)});
+  }
+
+  clearSearchResults = () => {
+    this.setState({searchedBooks: []});
+  }
+
+  searchBooks = event => {
+    event.preventDefault();
+    if (event.target.value === '') return this.clearSearchResults();
+
+    BooksAPI.search(event.target.value).then(results => {
+      if (results.error) return;
+      this.setSearchResults(results)
+    })
+    .catch(err => console.error(err));
+  }
+
   render() {
     return (
       <div className="app">
-        <Route exact path="/search" render={() => <SearchBooks />} />
+        <Route exact path="/search" render={() =>
+          <SearchBooks onSearchBooks={this.searchBooks} books={this.state.searchedBooks} clearSearchResults={this.clearSearchResults}/>}
+        />
 
         <Route exact path="/" render={() => (
           <div className="list-books">
@@ -93,8 +124,7 @@ class BooksApp extends React.Component {
               <Link className="open-search" to="/search">Add a book</Link>
             </div>
           </div>
-        )}
-        />
+        )}/>
       </div>
     );
   }

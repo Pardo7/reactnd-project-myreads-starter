@@ -17,7 +17,7 @@ function Book(props) {
 						}}
 					/>
 					<div className="book-shelf-changer">
-						<select readOnly value={shelf} onChange={e => handleShelfChange(e, props.book)}>
+						<select readOnly value={shelf || 'move'} onChange={e => handleShelfChange(e, props.book)}>
 								<option value="move" disabled>Move to...</option>
 								<option value="currentlyReading">Currently Reading</option>
 								<option value="wantToRead">Want to Read</option>
