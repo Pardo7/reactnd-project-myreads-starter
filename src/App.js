@@ -28,17 +28,22 @@ class BooksApp extends React.Component {
   handleShelfChange = (event, book) => {
     event.preventDefault();
     const destination = event.target.value;
-    const prevShelf = book.shelf || null;
+
     BooksAPI.update(book, destination).then(res => {
-      this.setState(prevState => {
-        if (prevShelf) prevState.books[prevShelf] = this.removeFromShelf(prevState, prevShelf, book);
-        if (destination !== 'none') {
-          book.shelf = destination;
-          prevState.books[destination].push(book);
-        }
-        return {prevState};
-      });
-    }).catch(err => console.log(err));
+      this.updateBookShelf(book, destination);
+    }).catch(err => console.error(err));
+  }
+
+  updateBookShelf(book, destination) {
+    const prevShelf = book.shelf || null;
+    this.setState(prevState => {
+      if (prevShelf) prevState.books[prevShelf] = this.removeFromShelf(prevState, prevShelf, book);
+      if (destination !== 'none') {
+        book.shelf = destination;
+        prevState.books[destination].push(book);
+      }
+      return {prevState};
+    });
   }
 
   removeFromShelf(shelfs, shelfName, book) {
