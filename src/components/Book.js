@@ -1,7 +1,8 @@
 import React from "react";
 
 function Book(props) {
-	const {backgroundImage, bookTitle, bookAuthor, shelf} = props.book;
+	const { title, authors, shelf} = props.book;
+	const { thumbnail } = props.book.imageLinks || '';
 	const {handleShelfChange} = props;
 
 	return (
@@ -13,7 +14,7 @@ function Book(props) {
 						style={{
 							width: 128,
 							height: 192,
-							backgroundImage: backgroundImage
+							backgroundImage: `url(${thumbnail})`
 						}}
 					/>
 					<div className="book-shelf-changer">
@@ -26,8 +27,8 @@ function Book(props) {
 						</select>
 					</div>
 				</div>
-				<div className="book-title">{ bookTitle }</div>
-				<div className="book-authors">{ bookAuthor }</div>
+				<div className="book-title">{ title }</div>
+				<div className="book-authors">{ authors }</div>
 			</div>
 		</li>
 	);
