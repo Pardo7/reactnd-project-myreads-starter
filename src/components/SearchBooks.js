@@ -1,5 +1,6 @@
 import React from "react";
 import Book from "./Book";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 function SearchBooks(props) {
@@ -28,5 +29,12 @@ function SearchBooks(props) {
 		</div>
 	);
 }
+
+SearchBooks.propTypes = {
+	clearSearchResults: PropTypes.func.isRequired,
+	handleShelfChange: PropTypes.func.isRequired,
+	onSearchBooks: PropTypes.func.isRequired,
+	books: PropTypes.array.isRequired
+};
 
 export default SearchBooks;

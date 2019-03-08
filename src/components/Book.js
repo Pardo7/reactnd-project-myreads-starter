@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function Book(props) {
 	const { title, authors, shelf} = props.book;
@@ -33,5 +34,10 @@ function Book(props) {
 		</li>
 	);
 }
+
+Book.propTypes = {
+	book: PropTypes.object.isRequired,
+	handleShelfChange: PropTypes.func.isRequired
+};
 
 export default Book;
