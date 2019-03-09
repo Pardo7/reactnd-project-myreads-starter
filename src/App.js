@@ -154,7 +154,7 @@ class BooksApp extends React.Component {
     if (event.target.value === '') return this.clearSearchResults();
 
     BooksAPI.search(event.target.value).then(results => {
-      if (results.error) return;
+      if (results.error) return this.clearSearchResults();;
       this.setSearchResults(results);
     })
     .catch(err => console.error(err));
