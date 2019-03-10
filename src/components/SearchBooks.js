@@ -24,6 +24,13 @@ function SearchBooks(props) {
 						props.books.map(book => {
 							return <Book key={book.id} book={book} handleShelfChange={props.handleShelfChange}/>;
 					})}
+					{props.searchUnavailable && (
+						<h3 style={{
+							color: 'orange'
+						}}>
+							Books Not Found
+						</h3>
+					)}
 				</ol>
 			</div>
 		</div>
@@ -33,6 +40,7 @@ function SearchBooks(props) {
 SearchBooks.propTypes = {
 	clearSearchResults: PropTypes.func.isRequired,
 	handleShelfChange: PropTypes.func.isRequired,
+	searchUnavailable: PropTypes.bool.isRequired,
 	onSearchBooks: PropTypes.func.isRequired,
 	books: PropTypes.array.isRequired
 };

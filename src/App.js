@@ -5,9 +5,7 @@ import { debounce } from 'lodash';
 import { Route } from "react-router-dom";
 import { Link } from "react-router-dom";
 import SearchBooks from "./components/SearchBooks";
-import CurrentlyReadingBooks from './components/CurrentlyReadingBooks';
-import WantToReadBooks from './components/WantToReadBooks';
-import ReadBooks from './components/ReadBooks';
+import BookShelf from "./components/BookShelf";
 import "./App.css";
 
 class BooksApp extends React.Component {
@@ -17,7 +15,8 @@ class BooksApp extends React.Component {
       read: PropTypes.Array,
       wantToRead: PropTypes.array
     }),
-    searchedBooks: PropTypes.array
+    searchedBooks: PropTypes.array,
+    searchAvailable: PropTypes.bool
   }
 
   state = {
@@ -27,8 +26,9 @@ class BooksApp extends React.Component {
       wantToRead: []
     },
     searchedBooks: [],
+    searchUnavailable: false
   };
-  debouncedOnChange = debounce(this.debouncedOnChange.bind(this), 2000);
+  debouncedOnChange = debounce(this.debouncedOnChange.bind(this), 1500);
   /**
 	 * Lifecycle callback which submits and api request for initial books user data.
 	 *
@@ -126,6 +126,7 @@ class BooksApp extends React.Component {
 
   clearSearchResults = () => {
     this.setState({searchedBooks: []});
+    this.searchAvailable();
   }
   /**
 	 * The 'bookExists' method filters through all shelfs for a particular
@@ -173,10 +174,40 @@ class BooksApp extends React.Component {
 	 */
   initSearchBooks(value) {
     BooksAPI.search(value).then(results => {
-      if (results.error) return this.clearSearchResults();;
+      if (results.error) return this.searchResultsError();
       this.setSearchResults(results);
+      this.searchAvailable();
     })
     .catch(err => console.error(err));
+  }
+  /**
+	 * The 'searchResultsError' clears the search results field and enables
+   * the search unavailable state prop which will render the search
+   * not found warning to the user
+   *
+	 * @method searchResultsError
+	 */
+  searchResultsError() {
+    this.clearSearchResults();;
+    this.searchNotFound();
+  }
+  /**
+	 * The 'searchNotFound' helper method sets the search unavailable
+   * boolean value which will trigger the books not found user warning.
+   *
+	 * @method searchNotFound
+	 */
+  searchNotFound() {
+    this.setState({searchUnavailable: true});
+  }
+  /**
+	 * The 'searchNotFound' helper method sets the search unavailable
+   * boolean value which will ommit the books not found user warning.
+   *
+	 * @method searchAvailable
+	 */
+  searchAvailable() {
+    this.setState({searchUnavailable: false});
   }
 
   render() {
@@ -186,7 +217,8 @@ class BooksApp extends React.Component {
           <SearchBooks onSearchBooks={this.searchBooks}
                        books={this.state.searchedBooks}
                        clearSearchResults={this.clearSearchResults}
-                       handleShelfChange={this.handleShelfChange}/>
+                       handleShelfChange={this.handleShelfChange}
+                       searchUnavailable={this.state.searchUnavailable}/>
         }/>
 
         <Route exact path="/" render={() => (
@@ -195,11 +227,9 @@ class BooksApp extends React.Component {
               <h1>MyReads</h1>
             </div>
             <div className="list-books-content">
-              <div>
-                <CurrentlyReadingBooks books={this.state.books.currentlyReading} handleShelfChange={this.handleShelfChange}/>
-                <WantToReadBooks books={this.state.books.wantToRead} handleShelfChange={this.handleShelfChange}/>
-                <ReadBooks books={this.state.books.read} handleShelfChange={this.handleShelfChange}/>
-              </div>
+              {Object.keys(this.state.books).map(shelf => (
+                <BookShelf key={shelf} shelfTitle={shelf} books={this.state.books[shelf]} handleShelfChange={this.handleShelfChange}/>
+              ))}
             </div>
             <div className="open-search">
               <Link className="open-search" to="/search">Add a book</Link>
