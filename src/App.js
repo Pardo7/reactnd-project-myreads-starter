@@ -1,6 +1,7 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
 import PropTypes from "prop-types";
+import { debounce } from 'lodash';
 import { Route } from "react-router-dom";
 import { Link } from "react-router-dom";
 import SearchBooks from "./components/SearchBooks";
@@ -27,6 +28,7 @@ class BooksApp extends React.Component {
     },
     searchedBooks: [],
   };
+  debouncedOnChange = debounce(this.debouncedOnChange.bind(this), 2000);
   /**
 	 * Lifecycle callback which submits and api request for initial books user data.
 	 *
@@ -144,16 +146,33 @@ class BooksApp extends React.Component {
     return exists;
   }
   /**
-	 * The 'searchBooks' method submits and api request to search for books
+	 * The 'searchBooks' method submits and api request to search for books.
    *
 	 * @method searchBooks
 	 * @param {event}
 	 */
   searchBooks = event => {
-    event.preventDefault();
     if (event.target.value === '') return this.clearSearchResults();
-
-    BooksAPI.search(event.target.value).then(results => {
+    this.debouncedOnChange(event.target.value);
+  }
+  /**
+	 * The 'debouncedOnChange' method ensures API requests are submitted after
+   * 2 seconds have passed since the user has completed their input.
+   *
+	 * @method debouncedOnChange
+	 * @param {value}
+	 */
+  debouncedOnChange(value) {
+    this.initSearchBooks(value);
+  }
+  /**
+	 * The 'initSearchBooks' method initializes the api request to search for books.
+   *
+	 * @method initSearchBooks
+	 * @param {value}
+	 */
+  initSearchBooks(value) {
+    BooksAPI.search(value).then(results => {
       if (results.error) return this.clearSearchResults();;
       this.setSearchResults(results);
     })
